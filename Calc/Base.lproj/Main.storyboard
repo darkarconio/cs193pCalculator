@@ -186,14 +186,6 @@
                                     <action selector="clear" destination="BYZ-38-t0r" eventType="touchUpInside" id="EDF-mv-EGa"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="B5W-KP-1gA">
-                                <rect key="frame" x="136" y="503" width="104" height="90"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="24"/>
-                                <state key="normal" title="⬅︎"/>
-                                <connections>
-                                    <action selector="backspace:" destination="BYZ-38-t0r" eventType="touchUpInside" id="qYl-2s-TPE"/>
-                                </connections>
-                            </button>
                             <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3mU-v6-VMj">
                                 <rect key="frame" x="248" y="503" width="104" height="90"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="24"/>
@@ -228,6 +220,14 @@
                                 <state key="normal" title="→M"/>
                                 <connections>
                                     <action selector="setVariable:" destination="BYZ-38-t0r" eventType="touchUpInside" id="jZg-yg-ycn"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="B5W-KP-1gA">
+                                <rect key="frame" x="136" y="503" width="104" height="90"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="24"/>
+                                <state key="normal" title="⬅︎"/>
+                                <connections>
+                                    <action selector="undo:" destination="BYZ-38-t0r" eventType="touchUpInside" id="G8w-Nl-95U"/>
                                 </connections>
                             </button>
                         </subviews>

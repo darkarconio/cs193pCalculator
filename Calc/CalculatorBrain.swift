@@ -68,6 +68,27 @@ class CalculatorBrain
         learnOp(Op.ConstantOperand("π", M_PI))
     }
     
+    typealias PropertyList = AnyObject
+    
+    var program: PropertyList { // guaranteed to be a PropertyList
+        get {
+            return opStack.map { $0.description }
+        }
+        set {
+            if let opSymbols = newValue as? Array<String> {
+                var newOpStack = [Op]()
+                for opSymbol in opSymbols {
+                    if let op = knownOps[opSymbol] {
+                        newOpStack.append(op)
+                    } else if let operand = NSNumberFormatter().numberFromString(opSymbol)?.doubleValue {
+                        newOpStack.append(.Operand(operand))
+                    }
+                }
+                opStack = newOpStack
+            }
+        }
+    }
+    
     func isIntegerValue (num: Double) -> Int? {return floor(num) == num ? Int(num) : nil}
 
     private func evaluate(ops: [Op]) -> (result: Double?, remainingOps: [Op], error: String?)
@@ -97,6 +118,8 @@ class CalculatorBrain
                     } else {
                         return (operation(operand), operandEvaluation.remainingOps, nil)
                     }
+                } else if let error = operandEvaluation.error {
+                    return (nil, ops, error)
                 }
             case .BinaryOperation(_, _, let operation, let errorCheck):
                 let op1Evaluation = evaluate(remainingOps)

@@ -44,7 +44,7 @@ class ViewController: UIViewController
             }
         } else {
             if let result = brain.undo() {
-                displayResult = (result as! String)
+                displayResult = result
             }
             historyValue = brain.description
         }
@@ -56,6 +56,7 @@ class ViewController: UIViewController
             if let number = displayValue {
                 if number > 0 {
                     display.text = "-" + display.text!
+                } else if number == 0 {
                 } else {
                     display.text!.removeAtIndex(display.text!.startIndex)
                 }
