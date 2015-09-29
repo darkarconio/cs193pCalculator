@@ -33,15 +33,20 @@ class ViewController: UIViewController
         }
     }
     
-    @IBAction func backspace(sender: UIButton)
+    @IBAction func undo(sender: UIButton)
     {
         if userIsInTheMiddleOfTypingANumber
         {
-            display.text = dropLast(display.text!)
-            if count(display.text!) == 0
+            display.text!.removeAtIndex(display.text!.endIndex.predecessor())
+            if display.text!.endIndex == display.text!.startIndex
             {
                 displayValue = nil
             }
+        } else {
+            if let result = brain.undo() {
+                displayResult = (result as! String)
+            }
+            historyValue = brain.description
         }
     }
     
@@ -52,8 +57,10 @@ class ViewController: UIViewController
                 if number > 0 {
                     display.text = "-" + display.text!
                 } else {
-                    display.text = dropFirst(display.text!)
+                    display.text!.removeAtIndex(display.text!.startIndex)
                 }
+            } else {
+               // displayValue = 0
             }
         } else {
             operate(changeSignOutlet)
@@ -68,14 +75,37 @@ class ViewController: UIViewController
         }
         if let operation = sender.currentTitle
         {
-            addToHistory("\(operation)", operation: true)
-            
             if let result = brain.performOperation(operation) {
-                displayValue = result
+                displayResult = result
             } else {
                 displayValue = nil
             }
+            historyValue = brain.description
         }
+    }
+    
+    @IBAction func getVariable(sender: UIButton)
+    {
+        if userIsInTheMiddleOfTypingANumber {
+            enter()
+        }
+        if let variable = sender.currentTitle {
+            brain.pushOperand(variable)
+            historyValue = brain.description
+        }
+    }
+    
+    @IBAction func setVariable(sender: UIButton)
+    {
+        if let validVariable = displayValue
+        {
+            brain.variableValues["M"] = validVariable
+            if let result = brain.evaluate() {
+                displayValue = result
+            }
+            userIsInTheMiddleOfTypingANumber = false
+        }
+
     }
     
     @IBAction func enter()
@@ -84,7 +114,7 @@ class ViewController: UIViewController
         if let number = displayValue {
             if let result = brain.pushOperand(number) {
                 displayValue = result
-                addToHistory("\(result)", operation: false)
+                historyValue = brain.description
             } else {
                 displayValue = nil
             }
@@ -93,59 +123,87 @@ class ViewController: UIViewController
         }
     }
     
-    func addToHistory (addition: String, operation: Bool)
-    {
-        var equalSign = ""
-        
-        if equalSignPresentInHistory {
-            history.text = dropLast(history.text!)
-            history.text = dropLast(history.text!)
-            equalSignPresentInHistory = false
-        }
-        
-        if operation {
-            equalSign = " ="
-            equalSignPresentInHistory = true
-        }
-        
-        if operationStackIsClear {
-            history.text = addition + equalSign
-            operationStackIsClear = false
-        } else {
-            history.text = history.text! + " \(addition)" + equalSign
-        }
-    }
-    
-    
     @IBAction func clear()
     {
         operationStackIsClear = true
+        equalSignPresentInHistory = false
         
-        history.text = "\(0)"
+        history.text = " "
         displayValue = nil
         
         brain.clearStack()
+        brain.variableValues.removeAll()
     }
 
-    var displayValue: Double?
+    var displayResult: AnyObject?
     {
-        get {
-            var possibleNumber = NSNumberFormatter().numberFromString(display.text!)
+        get
+        {
+            let possibleNumber = NSNumberFormatter().numberFromString(display.text!)
             
             if let number = possibleNumber {
                 return number.doubleValue
+            } else if display.text == " " {
+                return nil
+            } else {
+                return display.text!
+            }
+        }
+        set
+        {
+            if let number = newValue as? Double {
+                if let intNum = brain.isIntegerValue(number) {
+                    display.text = "\(intNum)"
+                } else {
+                    display.text = "\(number)"
+                }
+            } else if let error = newValue as? String {
+                display.text = error
+            } else {
+                display.text = " "
+            }
+            userIsInTheMiddleOfTypingANumber = false
+        }
+    }
+    
+    var displayValue: Double?
+    {
+        get {
+            if let number = displayResult as? Double {
+                return number
             } else {
                 return nil
             }
         }
         set {
             if let number = newValue {
-                display!.text = "\(number)"
-            }
-            else {
-                display!.text = "\(0)"
+                displayResult = number
+            } else {
+                displayResult = " "
             }
             userIsInTheMiddleOfTypingANumber = false
+        }
+    }
+    
+    var historyValue: String?
+    {
+        get
+        {
+            if description == " " {
+                return nil
+            } else {
+                display.text!.removeAtIndex(display.text!.endIndex.predecessor())
+                return display.text!
+            }
+        }
+        set
+        {
+            if let description = newValue {
+                history.text = "\(description)="
+            } else {
+                history.text = " "
+            }
+            
         }
     }
 }
